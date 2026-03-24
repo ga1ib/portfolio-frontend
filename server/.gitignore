@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Compiled output (Render builds this from source)
+dist/
+
+# Environment variables — NEVER commit this
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test artefacts
+*.txt
+

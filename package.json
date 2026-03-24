@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "framer-motion": "^12.38.0",
+    "react-social-icons": "^6.25.0"
+  }
+}
