@@ -12,6 +12,7 @@ import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
 
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || '';
@@ -22,16 +23,21 @@ app.use(helmet());
 // Allow both local dev and production frontend origins
 const allowedOrigins = [
   'http://localhost:5173',
+  'https://portfolio-frontend-arg.vercel.app', // 🔥 your Vercel frontend
   process.env.CLIENT_ORIGIN,
 ].filter(Boolean) as string[];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow server-to-server / curl requests (no Origin header)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      callback(new Error(`CORS: origin ${origin} not allowed`));
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.log("❌ Blocked by CORS:", origin);
+      return callback(new Error(`CORS: origin ${origin} not allowed`));
     },
     credentials: true,
   })
@@ -47,7 +53,7 @@ app.use('/api/messages', messageRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', message: 'API is running...', timestamp: new Date().toISOString() });
 });
 
 // Global error handler
