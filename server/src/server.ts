@@ -23,7 +23,7 @@ app.use(helmet());
 // Allow both local dev and production frontend origins
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://portfolio-frontend-arg.vercel.app', // 🔥 your Vercel frontend
+  'https://portfolio-argalib9053.vercel.app', // 🔥 your Vercel frontend
   process.env.CLIENT_ORIGIN,
 ].filter(Boolean) as string[];
 

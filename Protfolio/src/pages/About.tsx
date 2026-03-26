@@ -11,9 +11,9 @@ const fadeUp: Variants = {
 }
 
 const stats = [
-  { icon: Code2, value: '50+', label: 'Projects Delivered' },
-  { icon: Globe, value: '15+', label: 'Happy Clients' },
-  { icon: Layers, value: '4+', label: 'Years Experience' },
+  { icon: Code2, value: '15+', label: 'Projects Delivered' },
+  { icon: Globe, value: '10+', label: 'Happy Clients' },
+  { icon: Layers, value: '3+', label: 'Years Experience' },
   { icon: Coffee, value: '∞', label: 'Cups of Coffee' },
 ]
 
@@ -82,7 +82,7 @@ export default function About() {
               Hi, I'm Abdur Rahman Galib — a Full-Stack Developer
             </h2>
             <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
-              I'm a passionate full-stack developer with 4+ years of hands-on experience building
+              I'm a passionate full-stack developer with 3+ years of hands-on experience building
               production-grade web applications. I specialise in the MERN stack — React, Node.js,
               Express, and MongoDB — and I'm deeply invested in writing clean, maintainable code.
             </p>

@@ -19,7 +19,11 @@ export default function Home() {
 
   useEffect(() => {
     fetchProjects()
-      .then((projects) => setFeatured(projects.filter((p) => p.featured).slice(0, 3)))
+      .then((projects) => {
+        // Prefer projects marked as featured; fall back to the first 3 if none are marked
+        const featuredOnes = projects.filter((p) => p.featured)
+        setFeatured((featuredOnes.length > 0 ? featuredOnes : projects).slice(0, 3))
+      })
       .catch(() => {
         /* silently ignore — static fallback shown */
       })

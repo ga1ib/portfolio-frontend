@@ -14,7 +14,7 @@ const entries: TimelineEntry[] = [
     type: 'work',
     title: 'Full-Stack Developer',
     org: 'Freelance / Remote',
-    period: '2023 – Present',
+    period: '2024 – Present',
     description:
       'Building end-to-end MERN applications for clients across e-commerce, SaaS, and portfolio domains. Delivering responsive UIs and robust REST APIs with CI/CD pipelines.',
   },
@@ -22,17 +22,17 @@ const entries: TimelineEntry[] = [
     type: 'work',
     title: 'Junior Web Developer',
     org: 'Tech Startup',
-    period: '2022 – 2023',
+    period: '2023 – 2024',
     description:
       'Developed and maintained React frontends and Node.js services, collaborated in an Agile team, and improved code coverage through unit testing.',
   },
   {
     type: 'education',
-    title: 'B.Sc. in Computer Science',
-    org: 'University',
-    period: '2018 – 2022',
+    title: 'B.Sc. in Computer Science & Engineering',
+    org: 'North South University',
+    period: '2022 – 2026',
     description:
-      'Studied algorithms, data structures, software engineering, and database systems. Graduated with honours.',
+      'Pursuing a degree in Computer Science & Engineering with a focus on algorithms, data structures, software engineering, and database systems.',
   },
 ]
 
