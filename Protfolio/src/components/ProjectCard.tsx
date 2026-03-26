@@ -1,15 +1,16 @@
 import { motion } from 'framer-motion'
-import { ExternalLink, Trash2 } from 'lucide-react'
+import { ExternalLink, Trash2, Edit } from 'lucide-react'
 import { GithubIcon } from './SocialIcons'
 import type { Project } from '../types'
 
 interface ProjectCardProps {
   project: Project
   onDelete?: (id: string) => void
+  onEdit?: (project: Project) => void
   isAdmin?: boolean
 }
 
-export default function ProjectCard({ project, onDelete, isAdmin = false }: ProjectCardProps) {
+export default function ProjectCard({ project, onDelete, onEdit, isAdmin = false }: ProjectCardProps) {
   return (
     <motion.article
       layout
@@ -38,6 +39,15 @@ export default function ProjectCard({ project, onDelete, isAdmin = false }: Proj
           <span className="absolute top-3 left-3 px-2 py-0.5 text-xs font-semibold bg-sky-600 text-white rounded-full">
             Featured
           </span>
+        )}
+        {isAdmin && onEdit && (
+          <button
+            onClick={() => onEdit(project)}
+            aria-label={`Edit ${project.title}`}
+            className="absolute top-3 right-12 p-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          >
+            <Edit size={14} />
+          </button>
         )}
         {isAdmin && onDelete && (
           <button

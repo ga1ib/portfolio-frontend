@@ -19,7 +19,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// ── Projects ───────────────────────────────────────────────────────────────
+// Projects 
 
 export const fetchProjects = async (): Promise<Project[]> => {
   const { data } = await api.get<ApiResponse<Project[]>>('/projects');
@@ -33,18 +33,26 @@ export const addProject = async (
   return data.data!;
 };
 
+export const updateProject = async (
+  id: string, 
+  projectData: Omit<Project, '_id' | 'createdAt'>
+): Promise<Project> => {
+  const { data } = await api.put<ApiResponse<Project>>(`/projects/${id}`, projectData);
+  return data.data!;
+};
+
 export const removeProject = async (id: string): Promise<void> => {
   await api.delete(`/projects/${id}`);
 };
 
-// ── Contact ────────────────────────────────────────────────────────────────
+// Contact 
 
 export const submitContact = async (formData: ContactFormData): Promise<string> => {
   const { data } = await api.post<ApiResponse<null>>('/contact', formData);
   return data.message ?? 'Message sent!';
 };
 
-// ── Auth ───────────────────────────────────────────────────────────────────
+// Auth 
 
 export const loginAdmin = async (
   email: string,

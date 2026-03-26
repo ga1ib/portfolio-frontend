@@ -26,6 +26,31 @@ export const createProject = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+export const updateProject = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ success: false, errors: errors.array() });
+      return;
+    }
+
+    const project = await Project.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!project) {
+      res.status(404).json({ success: false, message: 'Project not found' });
+      return;
+    }
+
+    res.json({ success: true, data: project });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const deleteProject = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const project = await Project.findByIdAndDelete(req.params.id);
