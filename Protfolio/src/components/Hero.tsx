@@ -60,7 +60,7 @@ export default function Hero() {
 
             {/* Sub-heading */}
             <motion.p variants={item} className="text-xl sm:text-2xl font-medium text-gray-600 dark:text-gray-300 mb-4">
-              Full-Stack Developer & UI Craftsman
+              Full-Stack Developer & AI/ML Engineer
             </motion.p>
 
             {/* Description */}
