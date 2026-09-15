@@ -32,8 +32,11 @@ export default function Home() {
   return (
     <>
       <Helmet>
-        <title>Galib | Full-Stack Developer</title>
-        <meta name="description" content="Galib's portfolio — full-stack developer specialising in React, Node.js, and MongoDB." />
+        <title>Galib | Full-Stack Developer & AI/ML Engineer</title>
+        <meta
+          name="description"
+          content="Abdur Rahman Galib's portfolio — full-stack developer and AI/ML engineer specialising in Next.js/React, Node/Flask/NestJS, and Python-based ML & LLM pipelines."
+        />
       </Helmet>
 
       {/* Hero */}
@@ -56,7 +59,7 @@ export default function Home() {
               Featured Projects
             </h2>
             <p className="mt-3 text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
-              A curated selection of projects I'm most proud of.
+              A curated selection of projects spanning shipped products and independent AI/ML research.
             </p>
           </motion.div>
 
@@ -69,9 +72,21 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
-                { title: 'E-Commerce Platform', desc: 'Full-stack store with cart, payments & admin panel.', techs: ['React', 'Node.js', 'MongoDB', 'Stripe'] },
-                { title: 'Task Manager API', desc: 'RESTful API with JWT auth, roles, and real-time updates.', techs: ['Express', 'JWT', 'Socket.io'] },
-                { title: 'Portfolio CMS', desc: 'This very site — MERN stack with admin dashboard.', techs: ['React', 'TypeScript', 'Tailwind'] },
+                {
+                  title: 'Recallo',
+                  desc: 'AI-driven spaced repetition platform: LangChain document structuring, quiz generation, and an XGBoost review scheduler.',
+                  techs: ['React', 'Flask', 'LangChain', 'Gemini API', 'XGBoost'],
+                },
+                {
+                  title: 'SAM2-MUSTAR-XAI',
+                  desc: 'Explainable tiny-object detection for aerial imagery — SAM2.1 + AdaLoRA, best-in-class on VisDrone.',
+                  techs: ['PyTorch', 'SAM2.1 Hiera', 'AdaLoRA', 'YOLO26'],
+                },
+                {
+                  title: 'SECA',
+                  desc: 'Interventional credit assignment for self-evolving LLM agents, validated with fault-injection experiments.',
+                  techs: ['Python', 'LLM Orchestration', 'Statistical Testing'],
+                },
               ].map((p) => (
                 <div key={p.title} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
                   <div className="h-32 mb-4 rounded-xl bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 flex items-center justify-center text-4xl font-bold text-sky-200 dark:text-sky-800">
@@ -147,4 +162,3 @@ export default function Home() {
     </>
   )
 }
-

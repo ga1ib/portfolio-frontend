@@ -47,7 +47,7 @@ export default function Projects() {
     <>
       <Helmet>
         <title>Projects | Galib</title>
-        <meta name="description" content="Browse Galib's full-stack projects built with React, Node.js, MongoDB, and more." />
+        <meta name="description" content="Browse Abdur Rahman Galib's full-stack products and AI/ML research projects — built with React, Node.js/Flask, PyTorch, and LLM tooling." />
       </Helmet>
 
       {/* Header */}
@@ -65,7 +65,8 @@ export default function Projects() {
             All Projects
           </h1>
           <p className="mt-4 text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
-            A full catalogue of things I've built — from side projects to client work.
+            A full catalogue of what I've built and researched — from shipped full-stack products to
+            independent work in computer vision, NLP, and LLM-based agents.
           </p>
         </motion.div>
       </section>
@@ -134,4 +135,3 @@ export default function Projects() {
     </>
   )
 }
-

@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 import { motion, type Variants } from 'framer-motion'
-import { Code2, Coffee, Download, Globe, Layers } from 'lucide-react'
+import { BrainCircuit, Code2, Coffee, Download, GraduationCap } from 'lucide-react'
 import SkillSection from '../components/SkillSection'
 import ExperienceTimeline from '../components/ExperienceTimeline'
 import aboutImg from '../assets/about.png'
@@ -11,9 +11,9 @@ const fadeUp: Variants = {
 }
 
 const stats = [
-  { icon: Code2, value: '15+', label: 'Projects Delivered' },
-  { icon: Globe, value: '10+', label: 'Happy Clients' },
-  { icon: Layers, value: '3+', label: 'Years Experience' },
+  { icon: Code2, value: '6+', label: 'Projects Shipped' },
+  { icon: BrainCircuit, value: '4', label: 'AI/ML Research Projects' },
+  { icon: GraduationCap, value: '2026', label: 'CSE Graduate, NSU' },
   { icon: Coffee, value: '∞', label: 'Cups of Coffee' },
 ]
 
@@ -22,7 +22,7 @@ export default function About() {
     <>
       <Helmet>
         <title>About | Galib</title>
-        <meta name="description" content="Learn about Galib — a full-stack developer passionate about building beautiful, scalable web applications." />
+        <meta name="description" content="Learn about Abdur Rahman Galib — a full-stack developer and AI/ML engineer building shipped products and independent research spanning computer vision, NLP, and LLM-based agents." />
       </Helmet>
 
       {/* Page header */}
@@ -79,22 +79,24 @@ export default function About() {
             className="space-y-5"
           >
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
-              Hi, I'm Abdur Rahman Galib — a Full-Stack Developer
+              Hi, I'm Abdur Rahman Galib — a Full-Stack Developer & AI/ML Engineer
             </h2>
             <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
-              I'm a passionate full-stack developer with 3+ years of hands-on experience building
-              production-grade web applications. I specialise in the MERN stack — React, Node.js,
-              Express, and MongoDB — and I'm deeply invested in writing clean, maintainable code.
+              I'm a Computer Science & Engineering graduate from North South University (2026) who
+              ships full-stack web applications with real AI/ML capabilities built in. I work across
+              Next.js/React front ends, Node/Flask/NestJS backends, and Python-based ML pipelines —
+              end to end, from research to production interface.
             </p>
             <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
-              When I'm not coding, I enjoy exploring new technologies, contributing to open source,
-              and writing technical content. I believe great software is both functionally excellent
-              and a joy to use.
+              Alongside product work like Recallo, an AI study companion, I run independent research
+              spanning computer vision, NLP, and LLM-based agents — including explainable tiny-object
+              detection (SAM2-MUSTAR-XAI), interventional credit assignment for self-evolving agents
+              (SECA), and knowledge-augmented LLM prediction for student dropout risk.
             </p>
 
             {/* Download Resume */}
             <a
-              href="/resume.pdf"
+              href="../assets/Abdur_Rahman_Galib.pdf"
               download
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-sky-200 dark:shadow-sky-900/30 hover:shadow-xl hover:-translate-y-0.5 text-sm w-fit"
             >
@@ -163,4 +165,3 @@ export default function About() {
     </>
   )
 }
-

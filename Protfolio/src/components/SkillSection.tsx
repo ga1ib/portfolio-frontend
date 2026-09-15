@@ -13,30 +13,39 @@ interface SkillCategory {
 
 const skillData: SkillCategory[] = [
   {
-    category: 'Frontend',
+    category: 'Frontend & Backend',
     skills: [
-      { name: 'React / Next.js', level: 92, color: 'bg-blue-500' },
-      { name: 'TypeScript', level: 88, color: 'bg-blue-600' },
-      { name: 'Tailwind CSS', level: 90, color: 'bg-cyan-500' },
-      { name: 'Framer Motion', level: 78, color: 'bg-violet-500' },
+      { name: 'Next.js / React.js', level: 92, color: 'bg-blue-500' },
+      { name: 'TypeScript / Tailwind CSS', level: 88, color: 'bg-cyan-500' },
+      { name: 'Node.js / NestJS / Flask', level: 85, color: 'bg-green-500' },
+      { name: 'REST API Design / JWT / GraphQL', level: 88, color: 'bg-emerald-500' },
     ],
   },
   {
-    category: 'Backend',
+    category: 'ML / DL',
     skills: [
-      { name: 'Node.js / Express', level: 88, color: 'bg-green-500' },
-      { name: 'MongoDB / Mongoose', level: 84, color: 'bg-green-600' },
-      { name: 'REST APIs', level: 90, color: 'bg-emerald-500' },
-      { name: 'JWT Auth', level: 85, color: 'bg-teal-500' },
+      { name: 'PyTorch / TensorFlow', level: 88, color: 'bg-orange-500' },
+      { name: 'XGBoost / CatBoost / LightGBM', level: 90, color: 'bg-amber-500' },
+      { name: 'CNN / Transformer Architectures', level: 84, color: 'bg-red-500' },
+      { name: 'Explainable AI (SHAP / LIME)', level: 82, color: 'bg-rose-500' },
     ],
   },
   {
-    category: 'Tools & DevOps',
+    category: 'LLM & NLP',
     skills: [
-      { name: 'Git / GitHub', level: 90, color: 'bg-orange-500' },
-      { name: 'Docker', level: 70, color: 'bg-blue-400' },
-      { name: 'Vercel / Render', level: 85, color: 'bg-gray-500' },
-      { name: 'VS Code', level: 95, color: 'bg-blue-500' },
+      { name: 'LangChain', level: 88, color: 'bg-violet-500' },
+      { name: 'LLM Orchestration (Groq, xAI, HF, Gemini, QWEN)', level: 86, color: 'bg-purple-500' },
+      { name: 'Prompt Engineering', level: 90, color: 'bg-fuchsia-500' },
+      { name: 'Knowledge Augmentation', level: 85, color: 'bg-indigo-500' },
+    ],
+  },
+  {
+    category: 'Experimentation & Infra',
+    skills: [
+      { name: 'Bayesian Optimization / Optuna', level: 84, color: 'bg-teal-500' },
+      { name: 'Statistical Testing', level: 82, color: 'bg-sky-500' },
+      { name: 'MongoDB / PostgreSQL / ChromaDB / Supabase', level: 86, color: 'bg-blue-400' },
+      { name: 'Docker / Linux', level: 78, color: 'bg-gray-500' },
     ],
   },
 ]
@@ -60,7 +69,7 @@ export default function SkillSection({ compact = false }: SkillSectionProps) {
 
   return (
     <motion.div
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
       variants={containerVariants}
       initial="hidden"
       whileInView="show"
@@ -99,4 +108,3 @@ export default function SkillSection({ compact = false }: SkillSectionProps) {
     </motion.div>
   )
 }
-

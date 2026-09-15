@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 import { motion, type Variants } from 'framer-motion'
-import { Mail, MapPin } from 'lucide-react'
+import { Mail, MapPin, Phone } from 'lucide-react'
 import { GithubIcon, LinkedinIcon, TwitterIcon } from '../components/SocialIcons'
 import ContactForm from '../components/ContactForm'
 
@@ -13,8 +13,14 @@ const contactInfo = [
   {
     icon: Mail,
     label: 'Email',
-    value: 'www.abdurrahmangalib99@gmail.com',
-    href: 'mailto:www.abdurrahmangalib99@gmail.com',
+    value: 'abdur.galib99@gmail.com',
+    href: 'mailto:abdur.galib99@gmail.com',
+  },
+  {
+    icon: Phone,
+    label: 'Phone',
+    value: '+880 1752 817636',
+    href: 'tel:+8801752817636',
   },
   {
     icon: GithubIcon,
@@ -25,7 +31,7 @@ const contactInfo = [
   {
     icon: LinkedinIcon,
     label: 'LinkedIn',
-    value: 'linkedin.com/in/galib',
+    value: 'linkedin.com/in/abdur-rahman-07411921a',
     href: 'https://www.linkedin.com/in/abdur-rahman-07411921a/',
   },
   {
@@ -37,7 +43,7 @@ const contactInfo = [
   {
     icon: MapPin,
     label: 'Location',
-    value: 'Bangladesh 🇧🇩',
+    value: 'Bashundhara R/A, Dhaka, Bangladesh 🇧🇩',
     href: undefined,
   },
 ]
@@ -47,7 +53,7 @@ export default function Contact() {
     <>
       <Helmet>
         <title>Contact | Galib</title>
-        <meta name="description" content="Get in touch with Galib — open for freelance projects, collaborations, and full-time opportunities." />
+        <meta name="description" content="Get in touch with Abdur Rahman Galib — open for full-stack development and AI/ML engineering roles, freelance projects, and research collaborations." />
       </Helmet>
 
       {/* Header */}
@@ -99,7 +105,7 @@ export default function Contact() {
                   {href ? (
                     <a
                       href={href}
-                      target={href.startsWith('mailto') ? undefined : '_blank'}
+                      target={href.startsWith('mailto') || href.startsWith('tel') ? undefined : '_blank'}
                       rel="noopener noreferrer"
                       className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
                     >
@@ -139,4 +145,3 @@ export default function Contact() {
     </>
   )
 }
-
