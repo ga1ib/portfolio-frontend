@@ -5,7 +5,12 @@ import { Plus, RefreshCw, LayoutGrid, LogOut, Edit, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import ProjectCard from '../../components/ProjectCard'
 import Loader from '../../components/Loader'
-import { fetchProjects, addProject, removeProject, updateProject } from '../../services/api'
+import {
+  fetchProjects,
+  addProject,
+  removeProject,
+  updateProject,
+} from '../../services/api'
 import { useAuth } from '../../context/AuthContext'
 import type { Project } from '../../types'
 
@@ -24,6 +29,7 @@ const EMPTY: NewProjectForm = {
 export default function AdminDashboard() {
   const { logout } = useAuth()
   const navigate = useNavigate()
+
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [adding, setAdding] = useState(false)
@@ -36,18 +42,37 @@ export default function AdminDashboard() {
 
   const loadProjects = () => {
     setLoading(true)
+    setError('')
     fetchProjects()
       .then(setProjects)
-      .catch(() => setError('Failed to load projects.'))
+      .catch((err: any) => {
+        console.error('fetchProjects failed:', err?.response?.status, err?.response?.data)
+        setError(
+          err?.response?.data?.message ||
+            err?.response?.data?.error ||
+            'Failed to load projects.'
+        )
+      })
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => { loadProjects() }, [])
+  useEffect(() => {
+    loadProjects()
+  }, [])
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this project?')) return
-    await removeProject(id)
-    setProjects((prev) => prev.filter((p) => p._id !== id))
+    try {
+      await removeProject(id)
+      setProjects((prev) => prev.filter((p) => p._id !== id))
+    } catch (err: any) {
+      console.error('removeProject failed:', err?.response?.status, err?.response?.data)
+      setError(
+        err?.response?.data?.message ||
+          err?.response?.data?.error ||
+          'Failed to delete project.'
+      )
+    }
   }
 
   const handleEdit = (project: Project) => {
@@ -56,21 +81,25 @@ export default function AdminDashboard() {
     setForm({
       title: project.title,
       description: project.description,
-      techStack: project.techStack,
+      techStack: project.techStack ?? [],
       githubLink: project.githubLink || '',
       liveLink: project.liveLink || '',
       image: project.image || '',
       featured: project.featured,
     })
     setTechInput('')
+    setError('')
     setShowForm(true)
   }
 
-  const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleFieldChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value, type } = e.target
     setForm((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      [name]:
+        type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
     }))
   }
 
@@ -82,32 +111,81 @@ export default function AdminDashboard() {
     setTechInput('')
   }
 
-  const removeTech = (t: string) => setForm((prev) => ({ ...prev, techStack: prev.techStack.filter((x) => x !== t) }))
+  const removeTech = (t: string) =>
+    setForm((prev) => ({
+      ...prev,
+      techStack: prev.techStack.filter((x) => x !== t),
+    }))
+
+  /**
+   * Client-side validation.
+   * Returns an error string if invalid, or null if valid.
+   */
+  const validateForm = (): string | null => {
+    if (!form.title.trim()) return 'Title is required.'
+    if (!form.description.trim()) return 'Description is required.'
+    if (form.techStack.length === 0)
+      return 'Please add at least one technology to the tech stack.'
+    return null
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (editing) {
-      setAdding(true)
-      try {
-        const updated = await updateProject(editingId!, form)
-        setProjects((prev) => prev.map((p) => p._id === editingId ? updated : p))
-        resetForm()
-      } catch {
-        setError('Failed to update project. Make sure you are authenticated.')
-      } finally {
-        setAdding(false)
-      }
-    } else {
-      setAdding(true)
-      try {
-        const created = await addProject(form)
+    setError('')
+
+    // ── Client-side validation ─────────────────────────────
+    const validationError = validateForm()
+    if (validationError) {
+      setError(validationError)
+      return
+    }
+
+    // ── Normalize payload (trim strings, drop empties) ─────
+    const payload: NewProjectForm = {
+      title: form.title.trim(),
+      description: form.description.trim(),
+      techStack: form.techStack,
+      githubLink: form.githubLink.trim(),
+      liveLink: form.liveLink.trim(),
+      image: form.image.trim(),
+      featured: form.featured,
+    }
+
+    setAdding(true)
+    try {
+      if (editing && editingId) {
+        const updated = await updateProject(editingId, payload)
+        setProjects((prev) =>
+          prev.map((p) => (p._id === editingId ? updated : p))
+        )
+      } else {
+        const created = await addProject(payload)
         setProjects((prev) => [created, ...prev])
-        resetForm()
-      } catch {
-        setError('Failed to add project. Make sure you are authenticated.')
-      } finally {
-        setAdding(false)
       }
+      resetForm()
+    } catch (err: any) {
+      // ── Surface the REAL server error ─────────────────────
+      const status = err?.response?.status
+      const serverMsg =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.message
+
+      console.error(
+        `${editing ? 'updateProject' : 'addProject'} failed:`,
+        status,
+        err?.response?.data
+      )
+
+      if (status === 401) {
+        setError('Your session has expired. Please log in again.')
+      } else if (status === 400) {
+        setError(serverMsg || 'Invalid project data. Check the form fields.')
+      } else {
+        setError(serverMsg || `Request failed (${status ?? 'network error'}).`)
+      }
+    } finally {
+      setAdding(false)
     }
   }
 
@@ -117,15 +195,22 @@ export default function AdminDashboard() {
     setShowForm(false)
     setEditing(false)
     setEditingId(null)
+    setError('')
   }
 
-  const handleLogout = () => { logout(); navigate('/') }
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
 
-  const inputClass = 'w-full px-4 py-2.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-sky-500 placeholder-gray-400'
+  const inputClass =
+    'w-full px-4 py-2.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-sky-500 placeholder-gray-400'
 
   return (
     <>
-      <Helmet><title>Admin Dashboard | Galib</title></Helmet>
+      <Helmet>
+        <title>Admin Dashboard | Galib</title>
+      </Helmet>
 
       <div className="pt-20 pb-16 px-4 sm:px-6 min-h-screen bg-gray-50 dark:bg-gray-950">
         <div className="max-w-6xl mx-auto">
@@ -133,15 +218,26 @@ export default function AdminDashboard() {
           <div className="flex flex-wrap items-center justify-between gap-4 mb-10">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-sky-100 dark:bg-sky-900/30">
-                <LayoutGrid size={20} className="text-sky-600 dark:text-sky-400" />
+                <LayoutGrid
+                  size={20}
+                  className="text-sky-600 dark:text-sky-400"
+                />
               </div>
               <div>
-                <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">Dashboard</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{projects.length} projects total</p>
+                <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">
+                  Dashboard
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {projects.length} projects total
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <button onClick={loadProjects} className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Refresh">
+              <button
+                onClick={loadProjects}
+                className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Refresh"
+              >
                 <RefreshCw size={18} />
               </button>
               <button
@@ -153,7 +249,10 @@ export default function AdminDashboard() {
               >
                 <Plus size={16} /> Add Project
               </button>
-              <button onClick={handleLogout} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-red-500 hover:text-red-600 transition-colors">
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-red-500 hover:text-red-600 transition-colors"
+              >
                 <LogOut size={16} /> Logout
               </button>
             </div>
@@ -187,59 +286,65 @@ export default function AdminDashboard() {
                     <X size={20} />
                   </button>
                 </div>
-                <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <input 
-                    name="title" 
-                    required 
-                    value={form.title} 
-                    onChange={handleFieldChange} 
-                    placeholder="Title *" 
-                    className={inputClass} 
+                <form
+                  onSubmit={handleSubmit}
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                >
+                  <input
+                    name="title"
+                    required
+                    value={form.title}
+                    onChange={handleFieldChange}
+                    placeholder="Title *"
+                    className={inputClass}
                   />
-                  <input 
-                    name="image" 
-                    value={form.image} 
-                    onChange={handleFieldChange} 
-                    placeholder="Image URL" 
-                    className={inputClass} 
+                  <input
+                    name="image"
+                    value={form.image}
+                    onChange={handleFieldChange}
+                    placeholder="Image URL"
+                    className={inputClass}
                   />
-                  <textarea 
-                    name="description" 
-                    required 
-                    value={form.description} 
-                    onChange={handleFieldChange} 
-                    placeholder="Description *" 
-                    rows={3} 
-                    className={`${inputClass} sm:col-span-2 resize-none`} 
+                  <textarea
+                    name="description"
+                    required
+                    value={form.description}
+                    onChange={handleFieldChange}
+                    placeholder="Description *"
+                    rows={3}
+                    className={`${inputClass} sm:col-span-2 resize-none`}
                   />
-                  <input 
-                    name="githubLink" 
-                    value={form.githubLink} 
-                    onChange={handleFieldChange} 
-                    placeholder="GitHub URL" 
-                    className={inputClass} 
+                  <input
+                    name="githubLink"
+                    value={form.githubLink}
+                    onChange={handleFieldChange}
+                    placeholder="GitHub URL"
+                    className={inputClass}
                   />
-                  <input 
-                    name="liveLink" 
-                    value={form.liveLink} 
-                    onChange={handleFieldChange} 
-                    placeholder="Live Demo URL" 
-                    className={inputClass} 
+                  <input
+                    name="liveLink"
+                    value={form.liveLink}
+                    onChange={handleFieldChange}
+                    placeholder="Live Demo URL"
+                    className={inputClass}
                   />
 
                   {/* Tech stack input */}
                   <div className="sm:col-span-2">
                     <div className="flex gap-2 mb-2">
-                      <input 
-                        value={techInput} 
-                        onChange={(e) => setTechInput(e.target.value)} 
-                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTech())} 
-                        placeholder="Add tech (press Enter)" 
-                        className={inputClass} 
+                      <input
+                        value={techInput}
+                        onChange={(e) => setTechInput(e.target.value)}
+                        onKeyDown={(e) =>
+                          e.key === 'Enter' &&
+                          (e.preventDefault(), addTech())
+                        }
+                        placeholder="Add tech (press Enter)"
+                        className={inputClass}
                       />
-                      <button 
-                        type="button" 
-                        onClick={addTech} 
+                      <button
+                        type="button"
+                        onClick={addTech}
                         className="px-3 py-2 text-sm bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-lg font-medium hover:bg-sky-200 dark:hover:bg-sky-900/60 transition-colors"
                       >
                         Add
@@ -247,39 +352,65 @@ export default function AdminDashboard() {
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {form.techStack.map((t) => (
-                        <span key={t} className="flex items-center gap-1 px-2 py-0.5 text-xs bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-md">
+                        <span
+                          key={t}
+                          className="flex items-center gap-1 px-2 py-0.5 text-xs bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-md"
+                        >
                           {t}
-                          <button type="button" onClick={() => removeTech(t)} className="ml-1 text-sky-400 hover:text-red-500">×</button>
+                          <button
+                            type="button"
+                            onClick={() => removeTech(t)}
+                            className="ml-1 text-sky-400 hover:text-red-500"
+                          >
+                            ×
+                          </button>
                         </span>
                       ))}
                     </div>
+                    {form.techStack.length === 0 && (
+                      <p className="mt-1.5 text-xs text-gray-400 dark:text-gray-500">
+                        Add at least one technology.
+                      </p>
+                    )}
                   </div>
 
                   {/* Featured toggle */}
                   <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      name="featured" 
-                      checked={form.featured} 
-                      onChange={handleFieldChange} 
-                      className="w-4 h-4 rounded text-sky-600 focus:ring-sky-500" 
+                    <input
+                      type="checkbox"
+                      name="featured"
+                      checked={form.featured}
+                      onChange={handleFieldChange}
+                      className="w-4 h-4 rounded text-sky-600 focus:ring-sky-500"
                     />
                     Mark as Featured
                   </label>
 
                   {/* Actions */}
                   <div className="sm:col-span-2 flex gap-3 pt-2">
-                    <button 
-                      type="submit" 
-                      disabled={adding} 
+                    <button
+                      type="submit"
+                      disabled={adding}
                       className="flex items-center gap-2 px-5 py-2.5 bg-sky-600 hover:bg-sky-700 disabled:opacity-60 text-white text-sm font-semibold rounded-lg transition-colors"
                     >
-                      {adding ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : (editing ? <Edit size={16} /> : <Plus size={16} />)}
-                      {adding ? (editing ? 'Updating…' : 'Adding…') : (editing ? 'Update Project' : 'Add Project')}
+                      {adding ? (
+                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      ) : editing ? (
+                        <Edit size={16} />
+                      ) : (
+                        <Plus size={16} />
+                      )}
+                      {adding
+                        ? editing
+                          ? 'Updating…'
+                          : 'Adding…'
+                        : editing
+                        ? 'Update Project'
+                        : 'Add Project'}
                     </button>
-                    <button 
-                      type="button" 
-                      onClick={resetForm} 
+                    <button
+                      type="button"
+                      onClick={resetForm}
                       className="px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                     >
                       Cancel
@@ -292,22 +423,26 @@ export default function AdminDashboard() {
 
           {/* Projects grid */}
           {loading ? (
-            <div className="py-20 flex justify-center"><Loader /></div>
+            <div className="py-20 flex justify-center">
+              <Loader />
+            </div>
           ) : projects.length === 0 ? (
             <div className="py-20 text-center text-gray-400 dark:text-gray-500">
               No projects yet. Add your first one above!
             </div>
           ) : (
             <AnimatePresence mode="popLayout">
-              <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" layout>
+              <motion.div
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                layout
+              >
                 {projects.map((project) => (
-                  <ProjectCard 
-                    key={project._id} 
-                    project={project} 
-                    isAdmin 
+                  <ProjectCard
+                    key={project._id}
+                    project={project}
+                    isAdmin
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    
                   />
                 ))}
               </motion.div>
